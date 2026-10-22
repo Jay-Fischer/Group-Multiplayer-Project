@@ -340,8 +340,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 1220521108}
-  shootForce: 200
+  shootForce: 2000
   BulletPrefab: {fileID: 1695258998437964382, guid: 0bd221f759d795b4196355e52895e384, type: 3}
+  isSemiAuto: 0
+  RecoilKickBack: 0.88
+  RecoilKickUp: 6
+  RecoilReturnSpeed: 8
+  shootDelay: 0.3
 --- !u!1 &600520630
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,11 +1,28 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Bullet : MonoBehaviour
+public class DamageOnContact : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    public EnemyManager enemyManager;
+    public float damage = 25f;
+
+    private bool hasHit;
+    private void Start()
     {
-        if (other.CompareTag("Player") || other.CompareTag("Bullet"))
-            return;
-        Destroy(gameObject);
+        enemyManager = FindAnyObjectByType<EnemyManager>();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (hasHit) return;
+
+        NavMeshAgent enemy = other.GetComponentInParent<NavMeshAgent>();
+
+        if (enemy != null)
+        {
+            hasHit = true;
+            enemyManager.DamageEnemy(enemy, damage);
+            Destroy(gameObject);
+        }
     }
 }

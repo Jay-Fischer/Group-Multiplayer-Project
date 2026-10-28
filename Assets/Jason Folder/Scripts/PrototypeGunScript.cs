@@ -1,12 +1,18 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Gun : MonoBehaviour
+public class Gun : NetworkBehaviour
 {
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce;
     [SerializeField] private GameObject BulletPrefab;
     [SerializeField] bool isSemiAuto = false;
+    [SerializeField] private float shootDelay = 0.3f;
+    private float nextShootTime;
+    private InputAction shootAction;
+    [SerializeField] private Transform gunSpawnPoint;
+    
 
     [Header("Recoil Stats")]
     [SerializeField] private float RecoilKickBack = 0.88f;
@@ -16,48 +22,62 @@ public class Gun : MonoBehaviour
     private Vector3 startPosition;
     private Quaternion startRotation;
 
+    [Header("Layer Mask")]
+    public LayerMask aimColllisionMask = new LayerMask();
 
-
-    [SerializeField] private float shootDelay = 0.3f;
-    private float nextShootTime;
-
-    private InputAction shootAction;
-
+    
     private void Start()
     {
         shootAction = InputSystem.actions.FindAction("Attack");
         shootAction.started += OnAttackButtonPressed;
 
-        startPosition = transform.localPosition;
-        startRotation = transform.localRotation;
+        startPosition = gunSpawnPoint.transform.localPosition;
+        startRotation = gunSpawnPoint.transform.localRotation;
     }
 
     private void OnAttackButtonPressed(InputAction.CallbackContext ctx)
     {
         if (isSemiAuto)
-            Shoot();
+            ShootRpc();
     }
 
     private void Update()
     {
-        if (!isSemiAuto && shootAction.IsPressed())
-            Shoot();
+        if (IsOwner)
+        {
+            Vector2 screenCenterPoint = new Vector2(Screen.width / 2, Screen.height / 2);
 
-        transform.localPosition = Vector3.Lerp(transform.localPosition, startPosition, RecoilReturnSpeed * Time.deltaTime);
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, startRotation, RecoilReturnSpeed * Time.deltaTime);
+            Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
+
+            if (Physics.Raycast(ray, out RaycastHit rayCastHit, 999f, aimColllisionMask))
+            {
+                gunSpawnPoint.LookAt(rayCastHit.point);
+            }
+
+            if (!isSemiAuto && shootAction.IsPressed())
+                ShootRpc();
+
+            gunSpawnPoint.transform.localPosition = Vector3.Lerp(gunSpawnPoint.transform.localPosition, startPosition, RecoilReturnSpeed * Time.deltaTime);
+            gunSpawnPoint.transform.localRotation = Quaternion.Slerp(gunSpawnPoint.transform.localRotation, startRotation, RecoilReturnSpeed * Time.deltaTime);
+        }
     }
-
-    private void Shoot()
-    {
+    [Rpc(SendTo.Server)]
+    private void ShootRpc()
+    {        
         if (Time.time < nextShootTime) return;
         nextShootTime = Time.time + shootDelay;
 
         GameObject newBullet = Instantiate(BulletPrefab, firePoint.position, firePoint.rotation);
+        NetworkObject networkObj = newBullet.GetComponent<NetworkObject>();
+        networkObj.Spawn();
         if(newBullet.TryGetComponent(out Rigidbody rb))
-        rb.AddForce(shootForce * firePoint.forward * Time.fixedDeltaTime, ForceMode.Impulse);
+        
 
-        transform.localPosition -= new Vector3(0, 0, RecoilKickBack);
-        transform.localRotation *= Quaternion.Euler(-RecoilKickUp, 0, 0);
+        gunSpawnPoint.transform.localPosition -= new Vector3(0, 0, RecoilKickBack);
+        gunSpawnPoint.transform.localRotation *= Quaternion.Euler(-RecoilKickUp, 0, 0);
+
+
+        rb.AddForce(shootForce * firePoint.forward * Time.fixedDeltaTime, ForceMode.Impulse);
     }
 
     private void OnDestroy()

@@ -1,9 +1,13 @@
+using System.Globalization;
+using Unity.Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerLogic : MonoBehaviour
+public class PlayerLogic : NetworkBehaviour
 {
     IA_Player _inputs;
+    [SerializeField] private CinemachineCamera virtualCamera;
     [SerializeField] CharacterController cc;
     [SerializeField] private Transform camPosition;
 
@@ -60,6 +64,7 @@ public class PlayerLogic : MonoBehaviour
 
     private void Update()
     {
+        if (!IsLocalPlayer) return;
         HandlePhysics();
         HandleInput();
         HandleMovement();
@@ -136,4 +141,24 @@ public class PlayerLogic : MonoBehaviour
         cc.Move(moveDirection * Time.deltaTime);
         cc.Move(playerVelocity * Time.deltaTime);
     }
-}
+
+
+
+    //Networking
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            virtualCamera.Priority = 0;
+            return;
+        }
+
+        virtualCamera.Priority = 1;
+        virtualCamera.gameObject.SetActive(true);
+    }
+
+
+
+
+    }

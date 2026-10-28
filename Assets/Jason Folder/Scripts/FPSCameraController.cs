@@ -1,9 +1,10 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
 [RequireComponent(typeof(CharacterController))]
-public class FPSCameraController : MonoBehaviour
+public class FPSCameraController : NetworkBehaviour
 {
     [SerializeField] private Transform cameraTransform;
     private CharacterController characterController;
@@ -46,7 +47,11 @@ public class FPSCameraController : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        handleLook();
+        if (IsOwner)
+        {
+            handleLook();
+        }
+        
     }
 
 
@@ -60,5 +65,4 @@ public class FPSCameraController : MonoBehaviour
         cameraTransform.transform.localRotation = Quaternion.Euler(lookAngle, 0, 0);
         transform.rotation *= Quaternion.Euler(0, mouseDelta.x * sensitivity, 0);
     }
-
 }

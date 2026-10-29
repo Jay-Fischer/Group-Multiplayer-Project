@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class DamageOnContact : MonoBehaviour
+public class DamageOnContact : NetworkBehaviour
 {
     public EnemyManager enemyManager;
     public float damage = 25f;

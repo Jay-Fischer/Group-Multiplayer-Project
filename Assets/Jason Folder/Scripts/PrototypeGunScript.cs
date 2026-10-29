@@ -25,7 +25,13 @@ public class Gun : NetworkBehaviour
     [Header("Layer Mask")]
     public LayerMask aimColllisionMask = new LayerMask();
 
-    
+
+    private readonly NetworkVariable<Quaternion> netWeaponRotation = new NetworkVariable<Quaternion>(
+    writePerm: NetworkVariableWritePermission.Owner,
+    readPerm: NetworkVariableReadPermission.Everyone);
+
+
+
     private void Start()
     {
         shootAction = InputSystem.actions.FindAction("Attack");
@@ -43,23 +49,24 @@ public class Gun : NetworkBehaviour
 
     private void Update()
     {
-        if (IsOwner)
+        if (IsLocalPlayer)
         {
-            Vector2 screenCenterPoint = new Vector2(Screen.width / 2, Screen.height / 2);
-
-            Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
-
-            if (Physics.Raycast(ray, out RaycastHit rayCastHit, 999f, aimColllisionMask))
-            {
-                gunSpawnPoint.LookAt(rayCastHit.point);
-            }
-
             if (!isSemiAuto && shootAction.IsPressed())
                 ShootRpc();
-
-            gunSpawnPoint.transform.localPosition = Vector3.Lerp(gunSpawnPoint.transform.localPosition, startPosition, RecoilReturnSpeed * Time.deltaTime);
-            gunSpawnPoint.transform.localRotation = Quaternion.Slerp(gunSpawnPoint.transform.localRotation, startRotation, RecoilReturnSpeed * Time.deltaTime);
         }
+        if (IsOwner)
+        {
+            netWeaponRotation.Value = gunSpawnPoint.localRotation;
+        }
+        else
+        {
+            gunSpawnPoint.localRotation = Quaternion.Lerp(
+                gunSpawnPoint.localRotation,
+                netWeaponRotation.Value,
+                Time.deltaTime * 15f 
+            );
+        }
+        RecoilRpc();
     }
     [Rpc(SendTo.Server)]
     private void ShootRpc()
@@ -71,13 +78,25 @@ public class Gun : NetworkBehaviour
         NetworkObject networkObj = newBullet.GetComponent<NetworkObject>();
         networkObj.Spawn();
         if(newBullet.TryGetComponent(out Rigidbody rb))
-        
+
+        rb.AddForce(shootForce * firePoint.forward * Time.fixedDeltaTime, ForceMode.Impulse);
 
         gunSpawnPoint.transform.localPosition -= new Vector3(0, 0, RecoilKickBack);
         gunSpawnPoint.transform.localRotation *= Quaternion.Euler(-RecoilKickUp, 0, 0);
+    }
+    [Rpc(SendTo.Everyone)]
+    private void RecoilRpc()
+    {
+        Vector2 screenCenterPoint = new Vector2(Screen.width / 2, Screen.height / 2);
+        Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
+        if (Physics.Raycast(ray, out RaycastHit rayCastHit, 999f, aimColllisionMask))
+        {
+            gunSpawnPoint.LookAt(rayCastHit.point);
+        }
 
 
-        rb.AddForce(shootForce * firePoint.forward * Time.fixedDeltaTime, ForceMode.Impulse);
+        gunSpawnPoint.transform.localPosition = Vector3.Lerp(gunSpawnPoint.transform.localPosition, startPosition, RecoilReturnSpeed * Time.deltaTime);
+        gunSpawnPoint.transform.localRotation = Quaternion.Slerp(gunSpawnPoint.transform.localRotation, startRotation, RecoilReturnSpeed * Time.deltaTime);
     }
 
     private void OnDestroy()

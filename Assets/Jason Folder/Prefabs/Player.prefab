@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 5760620844424108347}
   - component: {fileID: 4922709211558019447}
   - component: {fileID: 5400781236229727935}
+  - component: {fileID: 7498181331133931287}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -392,6 +393,26 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &7498181331133931287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5906795424395125275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 052774b2ac5e04248bc72841790c9c06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
+  despawnOnDeath: 0
+  CurrentHealth:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 100
 --- !u!1 &6036216117549727576
 GameObject:
   m_ObjectHideFlags: 0

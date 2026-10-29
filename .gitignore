@@ -9,8 +9,12 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+<<<<<<< Updated upstream
 [Uu]ser/
 [Ss]ettings/
+=======
+[Uu]ser[Ss]ettings/
+>>>>>>> Stashed changes
 *.log
 
 # MemoryCaptures can get excessive in size.

@@ -15,4 +15,9 @@ public class KillScript : NetworkBehaviour
     {
         Destroy(gameObject, killTime);
     }
+    [Rpc(SendTo.Server)]
+    public void instantDestroyRpc()
+    {
+        Destroy(gameObject);
+    }
 }

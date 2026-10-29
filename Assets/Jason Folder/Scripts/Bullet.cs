@@ -4,26 +4,28 @@ using UnityEngine.AI;
 
 public class DamageOnContact : NetworkBehaviour
 {
-    public EnemyManager enemyManager;
+    //public EnemyHandler enemyManager;
     public float damage = 25f;
+    public KillScript killScript;
 
     private bool hasHit;
     private void Start()
     {
-        enemyManager = FindAnyObjectByType<EnemyManager>();
+        //enemyManager = FindAnyObjectByType<EnemyHandler>();
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (hasHit) return;
 
-        NavMeshAgent enemy = other.GetComponentInParent<NavMeshAgent>();
+        NetworkHealth enemy = other.GetComponentInParent<NetworkHealth>();
 
         if (enemy != null)
         {
             hasHit = true;
-            enemyManager.DamageEnemy(enemy, damage);
-            Destroy(gameObject);
+            enemy.TakeDamage(damage);
+            //enemyManager.DamageEnemy(enemy, damage);
+            killScript.instantDestroyRpc();
         }
     }
 }

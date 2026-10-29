@@ -181,8 +181,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  enemyManager: {fileID: 0}
   damage: 25
+  killScript: {fileID: -2284322376979635227}
 --- !u!114 &-2284322376979635227
 MonoBehaviour:
   m_ObjectHideFlags: 0

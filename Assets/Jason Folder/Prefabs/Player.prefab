@@ -298,7 +298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   firePoint: {fileID: 2501025244458615022}
-  shootForce: 2000
+  shootForce: 100
   BulletPrefab: {fileID: 1695258998437964382, guid: 0bd221f759d795b4196355e52895e384, type: 3}
   isSemiAuto: 0
   shootDelay: 0.3

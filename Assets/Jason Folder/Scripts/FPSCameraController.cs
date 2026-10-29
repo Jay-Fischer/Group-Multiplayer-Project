@@ -18,6 +18,12 @@ public class FPSCameraController : NetworkBehaviour
     private Vector2 lookInput;
 
 
+    private readonly NetworkVariable<float> netCameraPitch = new NetworkVariable<float>(
+        writePerm: NetworkVariableWritePermission.Owner,
+        readPerm: NetworkVariableReadPermission.Everyone
+    );
+
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -51,7 +57,11 @@ public class FPSCameraController : NetworkBehaviour
         {
             handleLook();
         }
-        
+        else
+        {
+            cameraTransform.localRotation = Quaternion.Euler(netCameraPitch.Value, 0, 0);
+        }
+
     }
 
 
@@ -64,5 +74,7 @@ public class FPSCameraController : NetworkBehaviour
 
         cameraTransform.transform.localRotation = Quaternion.Euler(lookAngle, 0, 0);
         transform.rotation *= Quaternion.Euler(0, mouseDelta.x * sensitivity, 0);
+
+        netCameraPitch.Value = lookAngle;
     }
 }

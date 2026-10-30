@@ -163,7 +163,10 @@ public class EnemyHandler : NetworkBehaviour
 
     //Director Functions
 
-    public void addToHitsThisWave() { timesHitThisWave++; }
+    public void addToHitsThisWave() 
+    {
+    timesHitThisWave = timesHitThisWave + 1; 
+    }
 
     public void getAdjustedEnemiesModifier()
     {

@@ -27,5 +27,6 @@ public class DamageOnContact : NetworkBehaviour
             //enemyManager.DamageEnemy(enemy, damage);
             killScript.instantDestroyRpc();
         }
+        if(other.tag == "Wall") killScript.instantDestroyRpc();
     }
 }

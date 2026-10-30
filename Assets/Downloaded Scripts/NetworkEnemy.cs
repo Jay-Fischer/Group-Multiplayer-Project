@@ -82,8 +82,8 @@ public class NetworkEnemy : NetworkBehaviour
         else if (Time.time >= nextAttack)
         {
             nextAttack = Time.time + attackCooldown;
-            target.TakeDamage(damage);
             handler.addToHitsThisWave();
+            target.TakeDamage(damage);            
         }
     }
 

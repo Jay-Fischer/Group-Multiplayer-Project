@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Jason Debug Scene.unity
     guid: f8d07c31a2448fe45ab78fc847706051
+  - enabled: 1
+    path: Assets/Scenes/Andrew Network Scene.unity
+    guid: e502bc8b9879d7b44a2b0f322b35edf8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

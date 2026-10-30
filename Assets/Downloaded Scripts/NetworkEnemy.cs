@@ -72,7 +72,7 @@ public class NetworkEnemy : NetworkBehaviour
 
         bool inRange = distanceSquared <= attackRange * attackRange;
 
-        if (inRange) 
+        if (!inRange) 
         {
             agent.SetDestination(target.transform.position);
         }

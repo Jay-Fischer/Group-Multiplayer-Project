@@ -201,6 +201,7 @@ MonoBehaviour:
   speed: 3.5
   attackRange: 2
   attackCooldown: 1
+  handler: {fileID: 0}
 --- !u!114 &8236559728264873844
 MonoBehaviour:
   m_ObjectHideFlags: 0

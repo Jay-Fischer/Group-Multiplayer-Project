@@ -408,6 +408,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 100
   despawnOnDeath: 0
+  logic: {fileID: 4922709211558019447}
+  shooting: {fileID: 5760620844424108347}
   CurrentHealth:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0

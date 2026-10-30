@@ -12,6 +12,7 @@ public class NetworkEnemy : NetworkBehaviour
     [SerializeField] float attackRange = 2f;
     [SerializeField] float attackCooldown = 1f;
 
+    public EnemyHandler handler;
     private NavMeshAgent agent;
     private NetworkHealth health;
     private float nextAttack;
@@ -20,6 +21,7 @@ public class NetworkEnemy : NetworkBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<NetworkHealth>();
+        handler = FindAnyObjectByType<EnemyHandler>();
         agent.enabled = false;
     }
 
@@ -75,11 +77,13 @@ public class NetworkEnemy : NetworkBehaviour
         if (!inRange) 
         {
             agent.SetDestination(target.transform.position);
+
         }
         else if (Time.time >= nextAttack)
         {
             nextAttack = Time.time + attackCooldown;
             target.TakeDamage(damage);
+            handler.addToHitsThisWave();
         }
     }
 

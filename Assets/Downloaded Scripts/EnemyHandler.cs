@@ -27,6 +27,12 @@ public class EnemyHandler : NetworkBehaviour
     public NetworkVariable<int> TimeToNextWave = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<WaveState> State = new(WaveState.Stopped, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    //Director variables
+    [SerializeField] private int timesHitLastWave = 0;
+    [SerializeField] private int timesHitThisWave = 0;
+    [SerializeField] private int adjustedEnemiesModifier = 0;
+
+
     private readonly List<NetworkEnemy> enemiesAlive = new();
     private float nextWaveTime;
 
@@ -64,6 +70,7 @@ public class EnemyHandler : NetworkBehaviour
 
     private void BeginWaiting(float duration)
     {
+        HealAllPlayers(30);
         duration = Mathf.Max(0f, duration);
         nextWaveTime = Time.time + duration;
         TimeToNextWave.Value = Mathf.CeilToInt(duration);
@@ -118,7 +125,11 @@ public class EnemyHandler : NetworkBehaviour
 
         CurrentWave.Value++;
 
-        int enemyCount = Mathf.Max(1, firstWaveOfEnemies) + (CurrentWave.Value - 1) * Mathf.Max(1, enemiesAddedPerWave);
+        getAdjustedEnemiesModifier();
+        int enemyCount = Mathf.Max(1, (Mathf.Max(1, firstWaveOfEnemies) + (CurrentWave.Value - 1) * Mathf.Max(1, enemiesAddedPerWave)) + adjustedEnemiesModifier);
+
+        timesHitLastWave = timesHitThisWave;
+        timesHitThisWave = 0;
 
         for (int i = 0; i < enemyCount; i++)
         {
@@ -149,5 +160,32 @@ public class EnemyHandler : NetworkBehaviour
             BeginWaiting(timeBetweenWaves);
         }
     }
-    
+
+    //Director Functions
+
+    public void addToHitsThisWave() { timesHitThisWave++; }
+
+    public void getAdjustedEnemiesModifier()
+    {
+        if (CurrentWave.Value == 1) return;
+        
+        else {
+            int mod = (timesHitLastWave - timesHitThisWave) / 2;
+            if (mod == 0)
+            {
+                adjustedEnemiesModifier += CurrentWave.Value - 1;
+            }
+            else adjustedEnemiesModifier = mod;
+        }
+    }
+
+    void HealAllPlayers(float amount)
+    {
+        NetworkHealth[] targets = Object.FindObjectsByType<NetworkHealth>(FindObjectsSortMode.None);
+
+        foreach (NetworkHealth target in targets)
+        {
+            target.HealHealth(amount);
+        }
+    }
 }

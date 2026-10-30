@@ -869,7 +869,7 @@ MonoBehaviour:
   firstWaveOfEnemies: 5
   enemiesAddedPerWave: 3
   timeBeforeFirstWave: 15
-  timeBetweenWaves: 15
+  timeBetweenWaves: 5
   CurrentWave:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -890,6 +890,9 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 2
+  timesHitLastWave: 0
+  timesHitThisWave: 0
+  adjustedEnemiesModifier: 0
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0
